@@ -8,8 +8,8 @@ printed_ids = set()
 counter=0
 
 # Load the YOLOv8 model
-model = YOLO("E:/Research_Papers/weed_detect/Yolo/Yolov8/Yolov8_nano_640/weights/best.onnx")
-video_path = 'E:/Research_Papers/weed_detect/VIDEO/videos.mp4'
+model = YOLO("E:/Research_Papers/Autonomous Pollination/model/best.pt")
+video_path = 'E:/Research_Papers/Autonomous Pollination/Resource/Video_image/video_256x640.mp4'
 cap = cv2.VideoCapture(video_path)
 
 # Initialize FPS calculation variables
@@ -24,7 +24,7 @@ while cap.isOpened():
 
     cropped_frame = frame[224:480, :]
     # Run YOLOv8 tracking on the frame, persisting tracks between frames
-    results = model.track(cropped_frame, persist=True, conf=0.7, iou=0.5, imgsz=(256, 640), verbose=False)
+    results = model.track(cropped_frame, persist=True, conf=0.7, iou=0.5, imgsz=(640, 256), verbose=False)
     output_tensor = results[0].boxes.id
     if output_tensor is not None:
         output_integers_id = [int(x) for x in output_tensor]
