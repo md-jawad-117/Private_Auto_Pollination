@@ -1,12 +1,12 @@
 import cv2
 import serial
 
-# ser = serial.Serial('COM5', 9600)
+ser = serial.Serial('COM6', 9600)
 
 def click_event(event, x, y, flags, param):
     if event == cv2.EVENT_LBUTTONDOWN:
         print(f"Clicked position: (X: {x}, Y: {y})")
-        # ser.write(f"{x},{y}\n".encode())
+        ser.write(f"{x},{y}\n".encode())
 
 cap = cv2.VideoCapture(0)
 
@@ -15,7 +15,7 @@ cv2.setMouseCallback("Webcam Feed", click_event)
 
 while True:
     ret, frame = cap.read()
-    frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+    frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
     frame = frame[:, :]
     if not ret:
         print("Can't receive frame (stream end?). Exiting ...")
@@ -39,4 +39,4 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
-# ser.close()
+ser.close()

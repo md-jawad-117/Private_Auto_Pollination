@@ -17,9 +17,10 @@ int tilt_pos = 90;
 void setup() 
 {
   pan_servo.attach(9); 
-  tilt_servo.attach(9); 
+  tilt_servo.attach(10); 
   pan_servo.write(90); 
   tilt_servo.write(90); 
+  Serial.begin(9600);
 }
 
 
@@ -35,40 +36,44 @@ void loop()
         String yString = data.substring(commaIndex + 1);
         center_x = xString.toFloat();
         center_y = yString.toFloat();
-
+      
         error_pan=center_x-pixel_x;
         error_tilt=center_y-pixel_y;
-        if (abs(error_pan) > 15)          // the number here will depend on camera
+        Serial.println(error_pan);
+        Serial.println(error_tilt);
+        if (abs(error_pan) > 10)          // the number here will depend on camera
         {
-          pan_pos=pan_pos-error_pan/35    // the number here will depend on camera
+          pan_pos=pan_pos-error_pan/12;    // the number here will depend on camera
         }
       
-        if (abs(error_tilt) > 15)          // the number here will depend on camera
+        if (abs(error_tilt) > 10)          // the number here will depend on camera
         {
-          tilt_pos=tilt_pos-error_tilt/35    // the number here will depend on camera
+          tilt_pos=tilt_pos-error_tilt/12 ;   // the number here will depend on camera
         }
       
-        if (pan_pos>135)  //max displacement of 45 degree form center of 90 degrees.
+        if (pan_pos>145)  //max displacement of 45 degree form center of 90 degrees.
         {
-          pan_pos=135;
+          pan_pos=145;
         }
-        if (pan_pos<45) 
+        if (pan_pos<35) 
         {
-          pan_pos=45;
+          pan_pos=35;
         }
       
-        if (tilt_pos>135)  //max displacement of 45 degree form center of 90 degrees.
+        if (tilt_pos>145)  //max displacement of 45 degree form center of 90 degrees.
         {
-          tilt_pos=135;
+          tilt_pos=145;
         }
-        if (tilt_pos<45) 
+        if (tilt_pos<35) 
         {
-          tilt_pos=45;
+          tilt_pos=35;
         }
       
         pan_servo.write(pan_pos);
         tilt_servo.write(tilt_pos);
-        pixel_x=center_x;
-        pixel_y=center_y;
+//        pixel_x=center_x;
+//        pixel_y=center_y;
+//        Serial.println(pan_pos);
+//        Serial.println(tilt_pos);
       }
 }

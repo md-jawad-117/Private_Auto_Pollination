@@ -35,7 +35,7 @@ def flip_video(input_video_path, output_video_path):
     cv2.destroyAllWindows()
 
 # Paths to input and output videos
-input_video_path = "E:/Research_Papers/Autonomous Pollination/Resource/Video_image/videol.mp4"
+input_video_path = "E:/Research_Papers/Autonomous Pollination/Resource/Video_image/video_F_.mp4"
 output_video_path = 'E:/Research_Papers/Autonomous Pollination/Resource/Video_image/videol_r.mp4'
 
 # Call the function to flip the video

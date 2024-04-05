@@ -23,9 +23,9 @@ while cap.isOpened():
     if not success:
         break
 
-    cropped_frame = frame[:, 224:480]
+    cropped_frame = frame[:, :]
     # Run YOLOv8 tracking on the frame, persisting tracks between frames
-    results = model.track(cropped_frame, persist=True, conf=0.7, iou=0.5, imgsz=(640, 256), verbose=False, classes=1)
+    results = model.track(cropped_frame, persist=True, conf=0.7, iou=0.5, imgsz=(640, 480), verbose=False, classes=1)
     output_tensor = results[0].boxes.id     # boxes is paramter while id is attribute.
     if output_tensor is not None:
         output_integers_id = [int(x) for x in output_tensor]
@@ -41,9 +41,9 @@ while cap.isOpened():
                 if not success:
                     break  # Break the loop if frame is not successfully read
 
-                cropped_frame = frame[:,224 :480]
+                cropped_frame = frame[:,:]
                 # Run YOLOv8 tracking on the frame, persisting tracks between frames
-                results = model.track(cropped_frame, persist=True, conf=0.7, iou=0.5, imgsz=(640, 256), verbose=False, classes=1)
+                results = model.track(cropped_frame, persist=True, conf=0.7, iou=0.5, imgsz=(640, 480), verbose=False, classes=1)
                 
                 output_tensor = results[0].boxes.id
                 if output_tensor is not None:

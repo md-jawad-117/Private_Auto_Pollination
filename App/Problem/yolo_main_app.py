@@ -9,7 +9,7 @@ import numpy as np
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QPushButton, QTextEdit, QFileDialog
 from PyQt5.QtGui import QPixmap, QImage, QFont
 from PyQt5.QtCore import Qt, QSize, QDateTime, QPropertyAnimation, QEasingCurve, QTimer,QCoreApplication
-# ser = serial.Serial('COM7', 9600)
+ser = serial.Serial('COM6', 9600)
 video_path = 'E:/Research_Papers/Autonomous Pollination/Resource/Video_image/video_480x640.mp4'
 
 # Initialize FPS calculation variables
@@ -228,7 +228,7 @@ class ImageApp(QWidget):
                     choosen_value = min(unchecked_num)
                     bbox = None  # Initialize bbox variable outside the loop
                     counter=0
-                    while counter < 30:         
+                    while counter < 10:         
                         ret, frame = self.webcam.read()
                         cropped_frame = frame[:, :]
                         # Run YOLOv8 tracking on the frame, persisting tracks between frames
@@ -258,7 +258,8 @@ class ImageApp(QWidget):
                                 centerX = (bbox[0] + bbox[2]) // 2
                                 centerY = (bbox[1] + bbox[3]) // 2
                                 print(centerX, centerY)
-                                # ser.write(f"{centerX},{centerY}\n".encode())
+                                ser.write(f"{centerX},{centerY}\n".encode())
+                                time.sleep(1)
                                 # print("Bounding box for object with ID",counter,"--", choosen_value, ":", bbox)                        
                             except ValueError:
                                 pass

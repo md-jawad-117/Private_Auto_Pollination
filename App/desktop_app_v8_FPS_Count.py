@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QLa
 from PyQt5.QtGui import QPixmap, QImage, QFont
 from PyQt5.QtCore import Qt, QSize, QDateTime, QPropertyAnimation, QEasingCurve, QTimer
 # ser = serial.Serial('COM7', 9600)
+
 video_path = 'E:/Research_Papers/Autonomous Pollination/Resource/Video_image/video_480x640.mp4'
 
 # Initialize FPS calculation variables
@@ -64,11 +65,11 @@ class ImageApp(QWidget):
         left_widget.setPalette(palette)
 
         # App name label with doubled text size
-        app_name_label = QLabel("Tomato Flower Detection")
-        app_name_label.setStyleSheet("color: white; font-size: 34px;")  # Double text size
+        app_name_label = QLabel("Tomato FLower Detection")
+        app_name_label.setStyleSheet("color: white; font-size: 36px;")  # Double text size
         left_layout.addWidget(app_name_label)
 
-        # # Dropdown menu with six options
+        # Dropdown menu with six options
         # options = ["YOLOv8_Nano", "YOLOv8_Small", "YOLO-NAS", "YOLOv7", "YOLOv5_Nano", "YOLOv5_Small"]
         # self.dropdown_menu = QComboBox(self)
         # self.dropdown_menu.addItems(options)
@@ -80,12 +81,12 @@ class ImageApp(QWidget):
         # left_layout.addWidget(self.dropdown_menu)
 
         # Button to load image (with functionality) with doubled text size
-        load_button_1 = HoverButton("Saved Image Detection")
+        load_button_1 = HoverButton("Saved Image Localization & Segmentation")
         load_button_1.clicked.connect(self.choose_image)
         load_button_1.setMinimumHeight(button_height)  # Set a fixed minimum height
         left_layout.addWidget(load_button_1)
         
-        load_button_5 = HoverButton(f"Real-Time Image Detection")
+        load_button_5 = HoverButton(f"Real-Time Image Localization & Segmentation")
         load_button_5.clicked.connect(self.update_webcam_image)
         load_button_5.setMinimumHeight(button_height)  # Set a fixed minimum height
         left_layout.addWidget(load_button_5)
@@ -123,8 +124,7 @@ class ImageApp(QWidget):
         right_layout = QVBoxLayout(right_widget)
         right_layout.setAlignment(Qt.AlignCenter)  # Align center both horizontally and vertically
         right_layout.setContentsMargins(10, 10, 10, 10)
-        right_widget.setStyleSheet("border: 3px solid #ffffff; background-color: #ffffff;")  # Set border color
-        
+        right_widget.setStyleSheet("border: 3px solid #1a0916;")  # Set border color
 
         self.image_label = QLabel()
         right_layout.addWidget(self.image_label)  # Add the image_label to the right layout
@@ -171,7 +171,7 @@ class ImageApp(QWidget):
                 bytes_per_line = ch * w
                 convert_to_Qt_format = QImage(rgb_image.data, w, h, bytes_per_line, QImage.Format_RGB888)
                 pixmap = QPixmap.fromImage(convert_to_Qt_format)
-                pixmap = pixmap.scaled(QSize(800, 800), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                pixmap = pixmap.scaled(QSize(700, 700), Qt.KeepAspectRatio, Qt.SmoothTransformation)
                 # Set the resized pixmap to the label
                 self.image_label.setPixmap(pixmap)
 
@@ -194,7 +194,7 @@ class ImageApp(QWidget):
             bytes_per_line = ch * w
             convert_to_Qt_format = QImage(rgb_image.data, w, h, bytes_per_line, QImage.Format_RGB888)
             pixmap = QPixmap.fromImage(convert_to_Qt_format)
-            pixmap = pixmap.scaled(QSize(800, 800), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            pixmap = pixmap.scaled(QSize(700, 700), Qt.KeepAspectRatio, Qt.SmoothTransformation)
             # Set the resized pixmap to the label
             self.image_label.setPixmap(pixmap)
         self.timer.stop()
@@ -215,9 +215,9 @@ class ImageApp(QWidget):
         ret, frame = self.webcam.read()
         if ret:
             new_frame_time = time.time()
-            cropped_frame = frame[:, 224:480]
-    # Run YOLOv8 tracking on the frame, persisting tracks between frames
-            results = self.model_det.track(cropped_frame, persist=True, conf=0.7, iou=0.5, imgsz=(640, 256), verbose=False, classes=1)
+            cropped_frame = frame[:, 64:480]
+            # Run YOLOv8 tracking on the frame, persisting tracks between frames
+            results = self.model_det.track(cropped_frame, persist=True, conf=0.7, iou=0.5, imgsz=(640, 416), tracker="bytetrack.yaml", verbose=False, classes=1)
             output_tensor = results[0].boxes.id
             if output_tensor is not None:
                 output_integers_id = [int(x) for x in output_tensor]
@@ -234,36 +234,20 @@ class ImageApp(QWidget):
                         wi=bbox[2] - bbox[0]
                         hi = bbox[3] - bbox[1]
                         area = wi*hi
-                        if area >20500:
-                            annotated_frame = results[0].plot()
-                            rgb_image = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
-                            h, w, ch = rgb_image.shape
-                            bytes_per_line = ch * w
-                            convert_to_Qt_format = QImage(rgb_image.data, w, h, bytes_per_line, QImage.Format_RGB888)
-                            pixmap = QPixmap.fromImage(convert_to_Qt_format)
-                            # Reduce the width while maintaining the aspect ratio
-                            desired_width = 680  # Set this to your desired width
-                            resized_pixmap = pixmap.scaledToWidth(desired_width, Qt.SmoothTransformation)
-                            # Set the resized pixmap to the label
-                            self.image_label.setPixmap(pixmap)
-                            # text_edit = self.findChild(QTextEdit)
-                            # text_edit.clear()
-                            # text_edit.append(f'Weed Count: {len(printed_ids)}')
-                            # text_edit.append(f'FPS: {fps:.2f}')
-                            # text_edit.append(f'Average FPS: {avg_fps:.2f}')
-                            # print(area)
-                            # print(len(printed_ids))
-                            deltaX, deltaY = centerX, centerY
-                            # printed_ids.add(obj_id)
-                            # ser.write(f"{deltaX},{deltaY}\n".encode())
-                            # Print the ID and its center point
-                            print(f"ID: {obj_id}, Center Point: ({deltaX}, {deltaY})")
-                            # Add the ID to the set so it's not printed again
-                            printed_ids.add(obj_id)
+                        
+                        # print(area)
+                        # print(len(printed_ids))
+                        deltaX, deltaY = centerX, centerY
+                        # printed_ids.add(obj_id)
+                        # ser.write(f"{deltaX},{deltaY}\n".encode())
+                        # Print the ID and its center point
+                        print(f"ID: {obj_id}, Center Point: ({deltaX}, {deltaY})")
+                        # Add the ID to the set so it's not printed again
+                        printed_ids.add(obj_id)
 
             # Visualize the results on the frame
-            # annotated_frame = results[0].plot()
-            # print(printed_ids)
+            annotated_frame = results[0].plot()
+            print(printed_ids)
 
             # Calculate and display FPS
             fps = 1 / (new_frame_time - prev_frame_time)
@@ -271,21 +255,24 @@ class ImageApp(QWidget):
             fps_sum += fps
             frame_count += 1
             avg_fps = fps_sum / frame_count
-            # rgb_image = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
-            # h, w, ch = rgb_image.shape
-            # bytes_per_line = ch * w
-            # convert_to_Qt_format = QImage(rgb_image.data, w, h, bytes_per_line, QImage.Format_RGB888)
-            # pixmap = QPixmap.fromImage(convert_to_Qt_format)
-            # # Reduce the width while maintaining the aspect ratio
+            rgb_image = cv2.cvtColor(annotated_frame, cv2.COLOR_BGR2RGB)
+            h, w, ch = rgb_image.shape
+            bytes_per_line = ch * w
+            convert_to_Qt_format = QImage(rgb_image.data, w, h, bytes_per_line, QImage.Format_RGB888)
+            pixmap = QPixmap.fromImage(convert_to_Qt_format)
+            # Reduce the width while maintaining the aspect ratio
             # desired_width = 680  # Set this to your desired width
             # resized_pixmap = pixmap.scaledToWidth(desired_width, Qt.SmoothTransformation)
-            # # Set the resized pixmap to the label
-            # self.image_label.setPixmap(pixmap)
-            # text_edit = self.findChild(QTextEdit)
-            # text_edit.clear()
-            # text_edit.append(f'Weed Count: {len(printed_ids)}')
-            # text_edit.append(f'FPS: {fps:.2f}')
-            # text_edit.append(f'Average FPS: {avg_fps:.2f}')
+            # Set the resized pixmap to the label
+            self.image_label.setPixmap(pixmap)
+            text_edit = self.findChild(QTextEdit)
+            text_edit.clear()
+            text_edit.append(f'Weed Count: {len(printed_ids)}')
+            text_edit.append(f'FPS: {fps:.2f}')
+            text_edit.append(f'Average FPS: {avg_fps:.2f}')
+
+
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = ImageApp()

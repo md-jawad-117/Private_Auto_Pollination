@@ -34,8 +34,8 @@ def resize_video(input_video_path, output_video_path, new_width, new_height):
     cv2.destroyAllWindows()
 
 # Paths to input and output videos
-input_video_path = "E:/Research_Papers/Autonomous Pollination/Resource/Video_image/videol_r.mp4"
-output_video_path = 'E:/Research_Papers/Autonomous Pollination/Resource/Video_image/video_256x640.mp4'
+input_video_path = "E:/Research_Papers/Autonomous Pollination/Resource/Video_image/video_c.mp4"
+output_video_path = 'E:/Research_Papers/Autonomous Pollination/Resource/Video_image/video_480x640.mp4'
 
 # Get new resolution from user input
 new_width = 480
